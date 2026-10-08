@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module Kiln
-
   # Maps HTTP verbs and paths to controller actions.
   #
   # A router has two phases. During boot, routes are collected through a
