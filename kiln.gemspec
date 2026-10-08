@@ -6,17 +6,16 @@ Gem::Specification.new do |spec|
   spec.name = "kiln"
   spec.version = Kiln::VERSION
   spec.authors = ["Martin Knopf"]
-  spec.email = ["martin.penckert@gmail.com"]
 
-  spec.summary = "TODO: Write a short summary, because RubyGems requires one."
-  spec.description = "TODO: Write a longer description or delete this line."
-  spec.homepage = "TODO: Put your gem's website or public repo URL here."
+  spec.summary = "A Ractor-native web framework on Kino"
+  spec.description = "Rails-like ergonomics, boot-then-freeze architecture, parallel Ractor workers."
+  spec.homepage = "https://github.com/felbit/kiln"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.2.0"
-  spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
+  spec.required_ruby_version = ">= 4.0"
+  spec.metadata["allowed_push_host"] = "https://rubygems.org"
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "TODO: Put your gem's public repo URL here."
-  spec.metadata["changelog_uri"] = "TODO: Put your gem's CHANGELOG.md URL here."
+  spec.metadata["source_code_uri"] = "https://github.com/felbit/kiln"
+  spec.metadata["changelog_uri"] = "https://github.com/felbit/kiln/blob/main/CHANGELOG.md"
 
   # Uncomment the line below to require MFA for gem pushes.
   # This helps protect your gem from supply chain attacks by ensuring
@@ -39,6 +38,9 @@ Gem::Specification.new do |spec|
 
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
+  spec.add_dependency "kino", "~> 0.7"
+  spec.add_dependency "rack", "~> 3.1"
+
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://guides.rubygems.org/make-your-own-gem/

@@ -10,4 +10,6 @@ gem "rake", "~> 13.0"
 
 gem "minitest", "~> 5.16"
 
+gem "pg"
+
 gem "rubocop", "~> 1.21"
