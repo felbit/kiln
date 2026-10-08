@@ -3,9 +3,10 @@
 module Kiln
   # Serving the Rack app via Kino
   class Dispatcher
-    def initialize(router, controllers)
+    def initialize(router, controllers, database)
       @router = router
       @controllers = controllers
+      @database = database
     end
 
     def call(env)
@@ -13,7 +14,9 @@ module Kiln
       return not_found unless match
 
       controller = @controllers.fetch(match.route.controller)
-      controller.new(env, match.params).process(match.route.action)
+      controller.new(env, match.params, @database).process(match.route.action)
+    ensure
+      @database&.clean_up_after_request
     end
 
     private

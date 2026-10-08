@@ -6,13 +6,19 @@ module Kiln
   class Application
     def initialize(&block)
       @router = Router.new
+      @database = nil
       instance_eval(&block) if block
+    end
+
+    def database(url:)
+      @database = Database.new(url:)
     end
 
     def routes(&) = @router.draw(&)
 
     def fire
-      Ractor.make_shareable(Dispatcher.new(@router, resolve_controllers))
+      @database&.verify!
+      Ractor.make_shareable(Dispatcher.new(@router, resolve_controllers, @database))
     end
 
     private

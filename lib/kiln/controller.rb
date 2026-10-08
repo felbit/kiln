@@ -7,9 +7,10 @@ module Kiln
 
     attr_reader :env, :params
 
-    def initialize(env, params)
+    def initialize(env, params, database = nil)
       @env = env
       @params = params
+      @database = database
       @response = nil
     end
 
@@ -32,6 +33,12 @@ module Kiln
     def process(action)
       public_send(action)
       @response || [204, {}, []]
+    end
+
+    def db
+      raise Error, "no database configured; add `database url: ...` to your application" unless @database
+
+      @database.connection
     end
 
     private
