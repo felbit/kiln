@@ -7,6 +7,7 @@ module Kiln
     def initialize(&block)
       @router = Router.new
       @database = nil
+      @views_path = nil
       instance_eval(&block) if block
     end
 
@@ -14,11 +15,16 @@ module Kiln
       @database = Database.new(url:)
     end
 
+    def views(path)
+      @views_path = path
+    end
+
     def routes(&) = @router.draw(&)
 
     def fire
       @database&.verify!
-      Ractor.make_shareable(Dispatcher.new(@router, resolve_controllers, @database))
+      runtime = Runtime.new(database: @database, views: @views_path && View.compile(@views_path))
+      Ractor.make_shareable(Dispatcher.new(@router, resolve_controllers, runtime))
     end
 
     private

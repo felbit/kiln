@@ -23,6 +23,7 @@ class TestMigrator < Minitest::Test
 
   def admin
     conn = PG.connect(BASE_URL)
+    conn.exec("SET client_min_messages TO warning")
     yield conn
   ensure
     conn&.close
