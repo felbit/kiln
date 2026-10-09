@@ -10,11 +10,14 @@ module Kiln
     end
 
     def call(env)
-      match = @router.recognize(env["REQUEST_METHOD"], env["PATH_INFO"])
+      params = Params.parse(env)
+      match = @router.recognize(Params.verb(env, params), env["PATH_INFO"])
       return not_found unless match
 
       controller = @controllers.fetch(match.route.controller)
-      controller.new(env, match.params, @runtime).process(match.route.action)
+      controller.new(env, params.merge(match.params), @runtime).process(match.route.action)
+    rescue Params::Error => e
+      [e.status, { "content-type" => "text/plain; charset=utf-8" }, [e.message]]
     ensure
       @runtime.database&.clean_up_after_request
     end

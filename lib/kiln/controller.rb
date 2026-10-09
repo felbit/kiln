@@ -52,6 +52,11 @@ module Kiln
       self.class.name.delete_suffix("Controller").gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase
     end
 
+    def nested_params(key)
+      value = params[key]
+      value.is_a?(Hash) ? value : {}
+    end
+
     private
 
     def commit(status, headers, body)

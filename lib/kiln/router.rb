@@ -40,6 +40,7 @@ module Kiln
     def get(path, to:) = add("GET", path, to)
     def post(path, to:) = add("POST", path, to)
     def patch(path, to:) = add("PATCH", path, to)
+    def put(path, to:) = add("PUT", path, to)
     def delete(path, to:) = add("DELETE", path, to)
 
     # Finds the first route matching a request.
@@ -66,13 +67,6 @@ module Kiln
 
     private
 
-    # Compiles a route definition and appends it to the route list
-    #
-    # @param verb [String] the HTTP method
-    # @param path [String] the path pattern
-    # @param target [String] the target as +"controller#action"+
-    # @return [Router] self
-    # @raise [ArgumentError] if +target+ is malformed
     def add(verb, path, target)
       controller, action = target.split("#", 2)
       unless controller && action
@@ -81,7 +75,7 @@ module Kiln
 
       @routes << Route.new(
         verb:, path:,
-        pattern: Regexp.new("\\A#{Regexp.escape(path).gsub(PARAM, '([^/]+)')}\\z"),
+        pattern: Regexp.new("\\A#{Regexp.escape(path).gsub(PARAM, "([^/]+)")}\\z"),
         param_names: path.scan(PARAM).flatten,
         controller:, action: action.to_sym
       )
