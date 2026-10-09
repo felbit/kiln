@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "fileutils"
+require "securerandom"
 require_relative "migrator"
 
 module Kiln
@@ -12,6 +13,7 @@ module Kiln
         kiln db:rollback [STEPS]         revert the last STEPS migrations (default 1)
         kiln db:status                   show which migrations have run
         kiln generate migration NAME     create db/migrate/TIMESTAMP_NAME.rb
+        kiln secret                      Generate a random secret for KILN_SECRET_KEY
     TEXT
 
     def self.start(argv)
@@ -21,6 +23,7 @@ module Kiln
       in ["db:rollback", steps]            then migrator.rollback(steps: Integer(steps))
       in ["db:status"]                     then print_status(migrator.status)
       in ["generate", "migration", name]   then generate_migration(name)
+      in ["secret"]                        then puts SecureRandom.hex(64)
       else abort USAGE
       end
     rescue Kiln::Error, ArgumentError => e

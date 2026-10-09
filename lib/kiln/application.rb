@@ -9,8 +9,11 @@ module Kiln
       @database = nil
       @views_path = nil
       @trusted_origins = []
+      @session_options = nil
       instance_eval(&block) if block
     end
+
+    def routes(&) = @router.draw(&)
 
     def database(url:)
       @database = Database.new(url:)
@@ -24,14 +27,17 @@ module Kiln
       @trusted_origins = origins
     end
 
-    def routes(&) = @router.draw(&)
+    def session(secret:, **options)
+      @session_options = { secret:, **options }
+    end
 
     def fire
       @database&.verify!
       runtime = Runtime.new(
         database: @database,
         views: @views_path && View.compile(@views_path),
-        cross_origin_protection: CrossOriginProtection.new(trusted_origins: @trusted_origins)
+        cross_origin_protection: CrossOriginProtection.new(trusted_origins: @trusted_origins),
+        sessions: @session_options && SessionStore.new(**@session_options)
       )
       Ractor.make_shareable(Dispatcher.new(@router, resolve_controllers, runtime))
     end

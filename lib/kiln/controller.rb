@@ -5,7 +5,7 @@ module Kiln
   class Controller
     class DoubleRenderError < Kiln::Error; end
 
-    FRAMEWORK_IVARS = %i[@env @params @runtime @response].freeze
+    FRAMEWORK_IVARS = %i[@env @params @runtime @response @session @flash].freeze
 
     attr_reader :env, :params
 
@@ -38,7 +38,9 @@ module Kiln
       public_send(action)
       default = "#{controller_name}/#{action}"
       render(default) if @response.nil? && @runtime.views&.template?(default)
-      @response || [204, {}, []]
+      response = @response || [204, {}, []]
+      response[1]["set-cookie"] = @runtime.sessions.cookie(@session.to_h, @env) if @session&.changed?
+      response
     end
 
     def db
@@ -57,6 +59,17 @@ module Kiln
       value.is_a?(Hash) ? value : {}
     end
 
+    def session
+      @session ||= begin
+        store = @runtime.sessions or
+          raise Error, "no sessions configured; add `session secret: ...` to your application"
+
+        Session.new(store, store.read_cookie(@env))
+      end
+    end
+
+    def flash = @flash ||= Flash.new(session)
+
     private
 
     def commit(status, headers, body)
@@ -74,7 +87,9 @@ module Kiln
     end
 
     def assigns
-      (instance_variables - FRAMEWORK_IVARS).to_h { [it, instance_variable_get(it)] }
+      values = (instance_variables - FRAMEWORK_IVARS).to_h { [it, instance_variable_get(it)] }
+      values[:@flash] = flash if @runtime.sessions
+      values
     end
   end
 end
