@@ -10,6 +10,10 @@ module Kiln
     end
 
     def call(env)
+      if (file = @runtime.static&.call(env))
+        return file
+      end
+
       return forbidden unless @runtime.cross_origin_protection.allowed?(env)
 
       params = Params.parse(env)

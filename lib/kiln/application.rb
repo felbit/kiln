@@ -10,6 +10,7 @@ module Kiln
       @views_path = nil
       @trusted_origins = []
       @session_options = nil
+      @static_root = nil
       instance_eval(&block) if block
     end
 
@@ -31,13 +32,18 @@ module Kiln
       @session_options = { secret:, **options }
     end
 
+    def static_files(path)
+      @static_root = path
+    end
+
     def fire
       @database&.verify!
       runtime = Runtime.new(
         database: @database,
         views: @views_path && View.compile(@views_path),
         cross_origin_protection: CrossOriginProtection.new(trusted_origins: @trusted_origins),
-        sessions: @session_options && SessionStore.new(**@session_options)
+        sessions: @session_options && SessionStore.new(**@session_options),
+        static: @static_root && Static.new(@static_root)
       )
       Ractor.make_shareable(Dispatcher.new(@router, resolve_controllers, runtime))
     end

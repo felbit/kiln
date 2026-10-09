@@ -7,6 +7,7 @@ end
 require_relative "kiln/version"
 require_relative "kiln/router"
 require_relative "kiln/database"
+require_relative "kiln/static"
 require_relative "kiln/runtime"
 require_relative "kiln/view"
 require_relative "kiln/session_store"
