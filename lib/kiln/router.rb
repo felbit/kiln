@@ -43,7 +43,7 @@ module Kiln
     def put(path, to:) = add("PUT", path, to)
     def delete(path, to:) = add("DELETE", path, to)
 
-    # Finds the first route matching a request.
+    # Finds the first route matching a request
     #
     # Routes are tried in definition order, so earlier routes win. This
     # method only reads the router and is safe to call from any Ractor once
@@ -51,8 +51,7 @@ module Kiln
     #
     # @param verb [String] the HTTP method, e.g. +"GET"+
     # @param path [String] the request path, e.g. +"/posts/123"+
-    # @return [Match, nil] the matched route and its params, or +nil+ if no
-    #   route matches
+    # @return [Match, nil] the matched route and its params or +nil+
     def recognize(verb, path)
       @routes.each do |route|
         next unless route.verb == verb

@@ -10,6 +10,8 @@ module Kiln
     end
 
     def call(env)
+      return forbidden unless @runtime.cross_origin_protection.allowed?(env)
+
       params = Params.parse(env)
       match = @router.recognize(Params.verb(env, params), env["PATH_INFO"])
       return not_found unless match
@@ -26,6 +28,10 @@ module Kiln
 
     def not_found
       [404, { "content-type" => "text/plain; charset=utf-8" }, ["Not Found"]]
+    end
+
+    def forbidden
+      [403, { "content-type" => "text/plain; charset=utf-8" }, ["Cross-origin request blocked"]]
     end
   end
 end
