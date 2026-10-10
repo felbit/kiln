@@ -6,8 +6,9 @@ module Kiln
   class Application
     LOAD_ORDER = %w[models controllers].freeze
 
-    def initialize(root: nil, &block)
+    def initialize(root: nil, environment: nil, &block)
       @root = root && resolve_root(root)
+      @environment = environment ? Environment.new(name: environment) : Environment.current
       @router = Router.new
       @database = nil
       @views_path = nil
@@ -18,7 +19,7 @@ module Kiln
       register if @root
     end
 
-    attr_reader :root
+    attr_reader :root, :environment
 
     def self.for_root(root) = Ractor[:kiln_applications]&.[](root)
 
