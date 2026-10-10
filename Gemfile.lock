@@ -3,6 +3,7 @@ PATH
   specs:
     kiln (0.1.0)
       erubi (~> 1.13)
+      irb
       kino (~> 0.7)
       rack (~> 3.1)
 

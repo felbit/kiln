@@ -39,9 +39,9 @@ Gem::Specification.new do |spec|
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
   spec.add_dependency "erubi", "~> 1.13"
+  spec.add_dependency "irb"
   spec.add_dependency "kino", "~> 0.7"
   spec.add_dependency "rack", "~> 3.1"
-
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://guides.rubygems.org/make-your-own-gem/

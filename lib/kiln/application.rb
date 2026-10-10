@@ -15,11 +15,16 @@ module Kiln
       @session_options = nil
       @trusted_origins = []
       instance_eval(&block) if block
+      register if @root
     end
 
     attr_reader :root
 
+    def self.for_root(root) = Ractor[:kiln_applications]&.[](root)
+
     def routes(&) = @router.draw(&)
+
+    def database_url = @database&.url
 
     def database(url:)
       @database = Database.new(url:)
@@ -78,6 +83,10 @@ module Kiln
       File.realpath(root)
     rescue Errno::ENOENT, Errno::ENOTDIR
       raise Error, "application root #{root} does not exist"
+    end
+
+    def register
+      (Ractor[:kiln_applications] ||= {})[@root] = self
     end
 
     def load_app_code

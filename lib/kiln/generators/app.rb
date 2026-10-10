@@ -34,7 +34,8 @@ module Kiln
           write(relative, source)
         end
         bundle_install if bundle
-        @out.puts "", "Created #{@name}. Next:", "  cd #{@name}", "  createdb #{@name}_development"
+        @out.puts "", "Created #{@name}. Next:", "  cd #{@name}",
+                  "  bundle exec kiln db:create", "  bundle exec kiln server"
       end
 
       def write(relative, source)

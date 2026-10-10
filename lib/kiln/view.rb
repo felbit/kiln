@@ -59,7 +59,10 @@ module Kiln
         path = File.join(root, relative)
         method_name = :"_kiln_template_#{index}"
         source = Erubi::Engine.new(
-          File.read(path), escape: true, escapefunc: "::Kiln::View.escape"
+          File.read(path, encoding: "UTF-8"),
+          escape: true,
+          escapefunc: "::Kiln::View.escape",
+          bufval: "::String.new(encoding: ::Encoding::UTF_8)"
         ).src
 
         templates_module.module_eval("def #{method_name}; #{source}\nend", path, 1)

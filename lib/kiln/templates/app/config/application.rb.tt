@@ -1,5 +1,7 @@
 require "kiln"
 
+Kiln::Env.load(File.expand_path("../.env", __dir__))
+
 module <%= @module_name %>
   App = Kiln::Application.new(root: File.expand_path("..", __dir__)) do
     database url: ENV.fetch("DATABASE_URL")

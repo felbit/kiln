@@ -1,0 +1,3 @@
+class CachingThing
+  @cache = {}
+end
