@@ -1,0 +1,2 @@
+DATABASE_URL=postgres://localhost/<%= @name %>_development
+KILN_SECRET_KEY=<%= @secret %>

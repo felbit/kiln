@@ -1,0 +1,11 @@
+# <%= @module_name %>
+
+A [Kiln](https://github.com/YOURNAME/kiln) app.
+
+## Getting started
+
+    createdb <%= @name %>_development
+    set -a; source .env; set +a
+    bundle exec kino
+
+Then open http://localhost:9292.

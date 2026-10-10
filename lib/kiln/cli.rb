@@ -3,21 +3,25 @@
 require "fileutils"
 require "securerandom"
 require_relative "migrator"
+require_relative "generators/app"
 
 module Kiln
   # The `kiln` command-line tool
   module CLI
     USAGE = <<~TEXT
       Usage:
-        kiln db:migrate                  apply pending migrations
-        kiln db:rollback [STEPS]         revert the last STEPS migrations (default 1)
-        kiln db:status                   show which migrations have run
-        kiln generate migration NAME     create db/migrate/TIMESTAMP_NAME.rb
+        kiln new PATH                    Create a new Kiln app
+          [--kiln-path=DIR] [--skip-bundle]
+        kiln db:migrate                  Apply pending migrations
+        kiln db:rollback [STEPS]         Revert the last STEPS migrations (default 1)
+        kiln db:status                   Show which migrations have run
+        kiln generate migration NAME     Create db/migrate/TIMESTAMP_NAME.rb
         kiln secret                      Generate a random secret for KILN_SECRET_KEY
     TEXT
 
     def self.start(argv)
       case argv
+      in ["new", path, *flags]             then new_app(path, flags)
       in ["db:migrate"]                    then migrator.migrate
       in ["db:rollback"]                   then migrator.rollback
       in ["db:rollback", steps]            then migrator.rollback(steps: Integer(steps))
@@ -60,6 +64,20 @@ module Kiln
         end
       RUBY
       puts "created #{path}"
+    end
+
+    def self.new_app(path, flags)
+      kiln_path = nil
+      bundle = true
+
+      flags.each do |flag|
+        if flag.start_with?("--kiln-path=") then kiln_path = flag.delete_prefix("--kiln-path=")
+        elsif flag == "--skip-bundle" then bundle = false
+        else raise Error, "unknown option #{flag}"
+        end
+      end
+
+      Generators::App.new(path, kiln_path:).run(bundle:)
     end
   end
 end
