@@ -53,11 +53,13 @@ module Kiln
       load_app_code
       @database&.verify!
       runtime = Runtime.new(
+        environment: @environment,
         database: @database,
         views: views_path&.then { View.compile(it) },
         cross_origin_protection: CrossOriginProtection.new(trusted_origins: @trusted_origins),
         sessions: @session_options && SessionStore.new(**@session_options),
-        static: static_root&.then { Static.new(it) }
+        static: static_root&.then { Static.new(it) },
+        errors: ErrorPages.new(environment: @environment, root: @root, routes: @router.routes)
       )
 
       # evaluating `resolve_controllers` here instead of inline for the order of

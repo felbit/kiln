@@ -12,7 +12,7 @@ module Kiln
     MAX_AGE = 30 * 24 * 60 * 60
     COOKIE_NAME = "_kiln_session"
 
-    def initialize(secret:, cookie_name: COOKIE_NAME, max_age: MAX_AGE)
+    def initialize(secret:, cookie_name: COOKIE_NAME, max_age: MAX_AGE, secure: false)
       if secret.to_s.bytesize < MIN_SECRET_BYTES
         raise Error, "session secret must be at least #{MIN_SECRET_BYTES} bytes; generate one with `kiln secret`"
       end
@@ -20,6 +20,7 @@ module Kiln
       @key = OpenSSL::KDF.hkdf(secret, salt: "kiln session", info: "aes-256-gcm", length: 32, hash: "SHA256")
       @cookie_name = cookie_name
       @max_age = max_age
+      @secure = secure
     end
 
     def read_cookie(env)
@@ -70,7 +71,7 @@ module Kiln
       end
 
       parts = ["#{@cookie_name}=#{value}", "path=/", "max-age=#{@max_age}", "httponly", "samesite=lax"]
-      parts << "secure" if env["rack.url_scheme"] == "https"
+      parts << "secure" if @secure || env["rack.url_scheme"] == "https"
       parts.join("; ")
     end
   end
