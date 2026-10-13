@@ -87,3 +87,34 @@ class TestSessionsInApp < Minitest::Test
     assert_equal ["1", "1|bumped", "1|"], results
   end
 end
+
+class TestSecureCookies < Minitest::Test
+  # Builds an app in the given environment, makes one request that writes the
+  # session, and returns the set-cookie header. "http" mimics TLS terminated
+  # at a proxy: the browser used https, but the app sees plain http.
+  def session_cookie(environment, scheme: "http", **session_options)
+    app = Kiln::Application.new(environment:) do
+      session(secret: SECRET, **session_options)
+      routes { post "/bump", to: "counter#bump" }
+    end.fire
+
+    env = {
+      "REQUEST_METHOD" => "POST", "PATH_INFO" => "/bump", "QUERY_STRING" => "",
+      "HTTP_HOST" => "blog.example", "rack.url_scheme" => scheme
+    }
+    _status, headers, _body = app.call(env)
+    headers.fetch("set-cookie")
+  end
+
+  def test_production_cookies_are_secure_behind_a_proxy
+    assert_includes session_cookie("production"), "; secure"
+  end
+
+  def test_development_cookies_over_http_are_not_secure
+    refute_includes session_cookie("development"), "secure"
+  end
+
+  def test_explicit_setting_wins_over_the_environment
+    refute_includes session_cookie("production", secure: false), "secure"
+  end
+end

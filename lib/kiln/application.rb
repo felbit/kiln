@@ -57,7 +57,7 @@ module Kiln
         database: @database,
         views: views_path&.then { View.compile(it) },
         cross_origin_protection: CrossOriginProtection.new(trusted_origins: @trusted_origins),
-        sessions: @session_options && SessionStore.new(**@session_options),
+        sessions: @session_options && SessionStore.new(secure: @environment.production?, **@session_options),
         static: static_root&.then { Static.new(it) },
         errors: ErrorPages.new(environment: @environment, root: @root, routes: @router.routes)
       )
@@ -158,7 +158,7 @@ module Kiln
       end
       return if mod.class_variables(false).empty?
 
-      raise Error, "#{mod} uses class variables (#{mod.class_variables(false).join(', ')}); " \
+      raise Error, "#{mod} uses class variables (#{mod.class_variables(false).join(", ")}); " \
                    "worker Ractors can't access them"
     end
   end

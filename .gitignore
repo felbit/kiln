@@ -6,4 +6,5 @@
 /pkg/
 /spec/reports/
 /tmp/
-spike/
+docs/
+.DS_Store

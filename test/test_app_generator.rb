@@ -33,7 +33,9 @@ class TestAppGenerator < Minitest::Test
 
     assert_includes File.read(File.join(app, "config/application.rb")), "module DemoBlog"
     assert_includes File.read(File.join(app, "Gemfile")), %(gem "kiln", path: "/src/kiln")
-    assert_match(/\AKILN_SECRET_KEY=\h{128}\z/, File.read(File.join(app, ".env")).lines.last.chomp)
+    secret_keys = File.read(File.join(app, ".env")).lines.grep(/\AKILN_SECRET_KEY=/)
+    assert_equal 1, secret_keys.length, "expected exactly one KILN_SECRET_KEY line in .env, found #{secret_keys.length}"
+    assert_match(/\AKILN_SECRET_KEY=\h{128}\z/, secret_keys.first.chomp)
   end
 
   def test_copies_views_verbatim
